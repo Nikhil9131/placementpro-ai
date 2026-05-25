@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: placementpro-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: placementpro-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongodb:27017/placementpro
+      - JWT_ACCESS_SECRET=supersecretaccesstokenplacementpro123!
+      - JWT_REFRESH_SECRET=supersecretrefreshtokenplacementpro123!
+      - GEMINI_API_KEY=your_gemini_api_key_here
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    container_name: placementpro-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
