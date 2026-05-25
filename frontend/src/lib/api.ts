@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   withCredentials: true, // critical for HttpOnly cookies refresh token
 });
 
@@ -27,8 +27,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
+        const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
         const res = await axios.post(
-          'http://localhost:5000/api/auth/refresh',
+          `${baseURL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
